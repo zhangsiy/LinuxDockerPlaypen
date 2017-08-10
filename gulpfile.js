@@ -28,7 +28,7 @@ const dockerEnvironment = argv.dockerenv || environment;
 const dockerTag = argv.dockertag || `${dockerEnvironment}-${version}`;
 
 const containerPort = argv.containerport || '5000';
-const hostPort = argv.hostport || '80';
+const hostPort = argv.hostport || '8005';
 
 // ========================= User Variables (Fill this out!) ======================================
 const mainProjectName = 'TestWebApp';
@@ -106,11 +106,11 @@ gulp.task('docker:compile-build-image', [], () =>
 );
 
 gulp.task('docker:build-app', ['docker:compile-build-image'], () => 
-	spawn('docker', ['run', '-it', '--rm', '-v', `${sourceDir}:/app/src`, '-v', `${outputDir}:/app/output`, buildImageTag, 'gulp publish'], {stdio:'inherit'})
+	spawn('docker', ['run', '-it', '--rm', '-v', `${sourceDir}:/app/src`, '-v', `${outputDir}:/app/output`, buildImageTag, 'gulp', 'publish'], {stdio:'inherit'})
 );
 
 gulp.task('docker:compile-bundle-image', ['docker:build-app'], () =>
-	spawn('docker', ['build', '-t', bundleImageTag, '-f', bundleDockerFilePath, '--build-arg', `entryassembly=${entryAssemblyName}`, '--build-arg', 'artifactdir=.\\output\\publishOutput', '--build-arg', `containerport=${containerPort}`, '.'], {stdio:'inherit'})
+	spawn('docker', ['build', '-t', bundleImageTag, '-f', bundleDockerFilePath, '--build-arg', `entryassembly=${entryAssemblyName}`, '--build-arg', 'artifactdir=./output/publishOutput', '--build-arg', `containerport=${containerPort}`, '.'], {stdio:'inherit'})
 	.then(() => spawn('docker', ['image', 'prune', '-f'], {stdio:'inherit'}))
 );
 

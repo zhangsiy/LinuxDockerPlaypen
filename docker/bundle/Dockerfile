@@ -11,4 +11,4 @@ EXPOSE $containerport
 # setup entry point
 ARG entryassembly
 ENV ENTRY=$entryassembly
-ENTRYPOINT dotnet %ENTRY%
+ENTRYPOINT ["/bin/bash", "-c", "dotnet $ENTRY"]
