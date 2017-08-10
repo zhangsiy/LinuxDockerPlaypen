@@ -31,7 +31,7 @@ const containerPort = argv.containerport || '5000';
 const hostPort = argv.hostport || '80';
 
 // ========================= User Variables (Fill this out!) ======================================
-const mainProjectName = 'TestWebApplication';
+const mainProjectName = 'TestWebApp';
 const registryUri = '119381170469.dkr.ecr.us-east-1.amazonaws.com/jeff-linux-container-testbed';
 // ================================================================================================
 
@@ -82,13 +82,15 @@ gulp.task('publish', ['build'], () =>
 );
 
 gulp.task('run', [], () => {
-		process.chdir(`${publishOutputDir}`);
 		if (argv.rebuild) {
-			gulp.start('publish', () => 
-				spawn(`dotnet ${entryAssemblyName}`, [], { stdio: 'inherit' })
+			gulp.start('publish', () => {
+					process.chdir(`${publishOutputDir}`);
+					spawn('dotnet', [`${entryAssemblyName}`], { stdio: 'inherit' });
+				}
 			);
 		} else {
-			spawn(`dotnet ${entryAssemblyName}`, [], { stdio: 'inherit' });
+			process.chdir(`${publishOutputDir}`);
+			spawn('dotnet', [`${entryAssemblyName}`], { stdio: 'inherit' });
 		}
 	}
 );
@@ -104,7 +106,7 @@ gulp.task('docker:compile-build-image', [], () =>
 );
 
 gulp.task('docker:build-app', ['docker:compile-build-image'], () => 
-	spawn('docker', ['run', '-it', '--rm', '-v', `${sourceDir}:\app\src`, '-v', `${outputDir}:\app\output`, buildImageTag, 'gulp publish'], {stdio:'inherit'})
+	spawn('docker', ['run', '-it', '--rm', '-v', `${sourceDir}:/app/src`, '-v', `${outputDir}:/app/output`, buildImageTag, 'gulp publish'], {stdio:'inherit'})
 );
 
 gulp.task('docker:compile-bundle-image', ['docker:build-app'], () =>
